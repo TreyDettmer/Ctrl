@@ -41,6 +41,38 @@ public class @PlayerControls : IInputActionCollection, IDisposable
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """"
+                },
+                {
+                    ""name"": ""MousePosition"",
+                    ""type"": ""PassThrough"",
+                    ""id"": ""60f0d4ed-2035-48e5-8c11-822099c73df6"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """"
+                },
+                {
+                    ""name"": ""Copy"",
+                    ""type"": ""Button"",
+                    ""id"": ""ddeb4269-2a24-47e2-902a-a4537a965be4"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """"
+                },
+                {
+                    ""name"": ""Paste"",
+                    ""type"": ""Button"",
+                    ""id"": ""98c9e942-df43-4b22-833e-71ebbcbdc493"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """"
+                },
+                {
+                    ""name"": ""Cut"",
+                    ""type"": ""Button"",
+                    ""id"": ""43bc75f2-baba-4911-b846-1526a87ea8e7"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """"
                 }
             ],
             ""bindings"": [
@@ -98,6 +130,116 @@ public class @PlayerControls : IInputActionCollection, IDisposable
                     ""action"": ""Dash"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""f2e4ac59-ba20-41d5-8f80-150f83776417"",
+                    ""path"": ""<Mouse>/position"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""MousePosition"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""Copy"",
+                    ""id"": ""b03c7097-fcc5-472c-916f-b6e9a0e6687e"",
+                    ""path"": ""ButtonWithOneModifier"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Copy"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""modifier"",
+                    ""id"": ""e8b6f319-1d12-480f-a2c3-5c1b815575bd"",
+                    ""path"": ""<Keyboard>/ctrl"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Copy"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""button"",
+                    ""id"": ""fa41b77d-e988-49f0-907a-ccba6353ffe3"",
+                    ""path"": ""<Keyboard>/c"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Copy"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""Paste"",
+                    ""id"": ""ddec5406-c66b-4cfe-b408-4d0c2f7ac273"",
+                    ""path"": ""ButtonWithOneModifier"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Paste"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""modifier"",
+                    ""id"": ""6dbaa250-49b4-40b6-adf8-10d12555572d"",
+                    ""path"": ""<Keyboard>/ctrl"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Paste"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""button"",
+                    ""id"": ""2c12eaf8-4edd-4001-be10-2c6ad78c5018"",
+                    ""path"": ""<Keyboard>/v"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Paste"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""Cut"",
+                    ""id"": ""a77e9694-7dec-4d2c-ab67-6c4ff94b5219"",
+                    ""path"": ""ButtonWithOneModifier"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Cut"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""modifier"",
+                    ""id"": ""da316f15-36ae-4b51-9c28-7d16e7e93333"",
+                    ""path"": ""<Keyboard>/ctrl"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Cut"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""button"",
+                    ""id"": ""3c181671-b806-4823-b6ef-f5b770c94783"",
+                    ""path"": ""<Keyboard>/x"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Cut"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
                 }
             ]
         }
@@ -109,6 +251,10 @@ public class @PlayerControls : IInputActionCollection, IDisposable
         m_Gameplay_Move = m_Gameplay.FindAction("Move", throwIfNotFound: true);
         m_Gameplay_Jump = m_Gameplay.FindAction("Jump", throwIfNotFound: true);
         m_Gameplay_Dash = m_Gameplay.FindAction("Dash", throwIfNotFound: true);
+        m_Gameplay_MousePosition = m_Gameplay.FindAction("MousePosition", throwIfNotFound: true);
+        m_Gameplay_Copy = m_Gameplay.FindAction("Copy", throwIfNotFound: true);
+        m_Gameplay_Paste = m_Gameplay.FindAction("Paste", throwIfNotFound: true);
+        m_Gameplay_Cut = m_Gameplay.FindAction("Cut", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -161,6 +307,10 @@ public class @PlayerControls : IInputActionCollection, IDisposable
     private readonly InputAction m_Gameplay_Move;
     private readonly InputAction m_Gameplay_Jump;
     private readonly InputAction m_Gameplay_Dash;
+    private readonly InputAction m_Gameplay_MousePosition;
+    private readonly InputAction m_Gameplay_Copy;
+    private readonly InputAction m_Gameplay_Paste;
+    private readonly InputAction m_Gameplay_Cut;
     public struct GameplayActions
     {
         private @PlayerControls m_Wrapper;
@@ -168,6 +318,10 @@ public class @PlayerControls : IInputActionCollection, IDisposable
         public InputAction @Move => m_Wrapper.m_Gameplay_Move;
         public InputAction @Jump => m_Wrapper.m_Gameplay_Jump;
         public InputAction @Dash => m_Wrapper.m_Gameplay_Dash;
+        public InputAction @MousePosition => m_Wrapper.m_Gameplay_MousePosition;
+        public InputAction @Copy => m_Wrapper.m_Gameplay_Copy;
+        public InputAction @Paste => m_Wrapper.m_Gameplay_Paste;
+        public InputAction @Cut => m_Wrapper.m_Gameplay_Cut;
         public InputActionMap Get() { return m_Wrapper.m_Gameplay; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -186,6 +340,18 @@ public class @PlayerControls : IInputActionCollection, IDisposable
                 @Dash.started -= m_Wrapper.m_GameplayActionsCallbackInterface.OnDash;
                 @Dash.performed -= m_Wrapper.m_GameplayActionsCallbackInterface.OnDash;
                 @Dash.canceled -= m_Wrapper.m_GameplayActionsCallbackInterface.OnDash;
+                @MousePosition.started -= m_Wrapper.m_GameplayActionsCallbackInterface.OnMousePosition;
+                @MousePosition.performed -= m_Wrapper.m_GameplayActionsCallbackInterface.OnMousePosition;
+                @MousePosition.canceled -= m_Wrapper.m_GameplayActionsCallbackInterface.OnMousePosition;
+                @Copy.started -= m_Wrapper.m_GameplayActionsCallbackInterface.OnCopy;
+                @Copy.performed -= m_Wrapper.m_GameplayActionsCallbackInterface.OnCopy;
+                @Copy.canceled -= m_Wrapper.m_GameplayActionsCallbackInterface.OnCopy;
+                @Paste.started -= m_Wrapper.m_GameplayActionsCallbackInterface.OnPaste;
+                @Paste.performed -= m_Wrapper.m_GameplayActionsCallbackInterface.OnPaste;
+                @Paste.canceled -= m_Wrapper.m_GameplayActionsCallbackInterface.OnPaste;
+                @Cut.started -= m_Wrapper.m_GameplayActionsCallbackInterface.OnCut;
+                @Cut.performed -= m_Wrapper.m_GameplayActionsCallbackInterface.OnCut;
+                @Cut.canceled -= m_Wrapper.m_GameplayActionsCallbackInterface.OnCut;
             }
             m_Wrapper.m_GameplayActionsCallbackInterface = instance;
             if (instance != null)
@@ -199,6 +365,18 @@ public class @PlayerControls : IInputActionCollection, IDisposable
                 @Dash.started += instance.OnDash;
                 @Dash.performed += instance.OnDash;
                 @Dash.canceled += instance.OnDash;
+                @MousePosition.started += instance.OnMousePosition;
+                @MousePosition.performed += instance.OnMousePosition;
+                @MousePosition.canceled += instance.OnMousePosition;
+                @Copy.started += instance.OnCopy;
+                @Copy.performed += instance.OnCopy;
+                @Copy.canceled += instance.OnCopy;
+                @Paste.started += instance.OnPaste;
+                @Paste.performed += instance.OnPaste;
+                @Paste.canceled += instance.OnPaste;
+                @Cut.started += instance.OnCut;
+                @Cut.performed += instance.OnCut;
+                @Cut.canceled += instance.OnCut;
             }
         }
     }
@@ -208,5 +386,9 @@ public class @PlayerControls : IInputActionCollection, IDisposable
         void OnMove(InputAction.CallbackContext context);
         void OnJump(InputAction.CallbackContext context);
         void OnDash(InputAction.CallbackContext context);
+        void OnMousePosition(InputAction.CallbackContext context);
+        void OnCopy(InputAction.CallbackContext context);
+        void OnPaste(InputAction.CallbackContext context);
+        void OnCut(InputAction.CallbackContext context);
     }
 }

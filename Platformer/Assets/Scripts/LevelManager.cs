@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.Tilemaps;
 using TMPro;
 
 public class LevelManager : MonoBehaviour
@@ -9,19 +10,27 @@ public class LevelManager : MonoBehaviour
     // class for handling altf4 timer, cntrl meter, player health
 
     public static LevelManager instance;
+    public Tilemap foregroundTilemap;
+    
 
 
     public float initialTimerValue = 60f;
     private float currentTimerValue = 60f;
-    public Slider timerSlider;
-    public TextMeshProUGUI timerTextValue;
+
 
     private bool isRunning = false;
 
     private int currentCntrlEnergy = 0;
     public int maxCntrlEnergy = 10;
+
+
+    [Header("UI")]
+    public Slider timerSlider;
+    public TextMeshProUGUI timerTextValue;
     public Slider cntrlEnergySlider;
     public TextMeshProUGUI cntrlEnergyTextValue;
+    public Image clipboard;
+    public TextMeshProUGUI[] shortcutCostsText;
 
 
     private void Awake()
@@ -72,7 +81,30 @@ public class LevelManager : MonoBehaviour
         value = Mathf.Max(0, value);
         cntrlEnergySlider.value = (float)value / (float)maxCntrlEnergy;
         cntrlEnergyTextValue.text = value.ToString();
+        currentCntrlEnergy = value;
+    }
 
+    public void UpdateClipboard(Sprite sprite)
+    {
+        if (sprite != null)
+        {
+            clipboard.sprite = sprite;
+            clipboard.enabled = true;
+            
+        }
+        else
+        {
+            clipboard.enabled = false;
+        }
+        
+    }
+
+    public void SetShortcutCosts(int tabCost, int copyCost, int cutCost, int pasteCost)
+    {
+        shortcutCostsText[0].text = "Tab\t\t" + tabCost;
+        shortcutCostsText[1].text = "Copy\t\t" + copyCost;
+        shortcutCostsText[2].text = "Cut\t\t" + cutCost;
+        shortcutCostsText[3].text = "Paste\t\t" + pasteCost;
     }
 
     private void LoseLevel()
