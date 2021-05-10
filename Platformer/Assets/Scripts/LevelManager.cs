@@ -78,7 +78,7 @@ public class LevelManager : MonoBehaviour
 
     public void UpdateCntrlEnergy(int value)
     {
-        value = Mathf.Max(0, value);
+        value = Mathf.Min(Mathf.Max(0, value),maxCntrlEnergy);
         cntrlEnergySlider.value = (float)value / (float)maxCntrlEnergy;
         cntrlEnergyTextValue.text = value.ToString();
         currentCntrlEnergy = value;

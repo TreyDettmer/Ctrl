@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
+using UnityEngine.AI;
 
 public class PlayerManager : MonoBehaviour
 {
@@ -39,15 +40,29 @@ public class PlayerManager : MonoBehaviour
     private bool isDashing = false;
 
     private Vector2 aimDirection = Vector2.zero;
+    public NavMeshSurface2d navMeshSurface;
+
+    public static PlayerManager instance;
 
     private void Awake()
     {
-        controls = new PlayerControls();
+        // singleton
+        if (instance == null)
+        {
+            instance = this;
+            controls = new PlayerControls();
+        }
+        else if (instance != this)
+        {
+            Destroy(this.gameObject);
+        }
+        
     }
 
     // Start is called before the first frame update
     void Start()
     {
+        
         playerController = GetComponent<PlayerController>();
         selectionRay = GetComponent<LineRenderer>();
         // set up input events
@@ -155,6 +170,8 @@ public class PlayerManager : MonoBehaviour
 
                     LevelManager.instance.foregroundTilemap.SetTile(LevelManager.instance.foregroundTilemap.WorldToCell(target), clipboardTile);
                     UpdateCntrlEnergy(-pasteCost);
+                    navMeshSurface.BuildNavMeshAsync();
+
                 }
             }
             else if (clipboardObject != null)
@@ -163,6 +180,8 @@ public class PlayerManager : MonoBehaviour
                 GameObject clone = Instantiate(clipboardObject.gameObject, target,Quaternion.identity);
                 clone.SetActive(true);
                 UpdateCntrlEnergy(-pasteCost);
+                navMeshSurface.BuildNavMeshAsync();
+
             }
             
         }
@@ -189,6 +208,7 @@ public class PlayerManager : MonoBehaviour
                         Destroy(clipboardObject.gameObject);
                         clipboardObject = null;
                     }
+                    navMeshSurface.BuildNavMeshAsync();
 
 
                 }
@@ -201,6 +221,7 @@ public class PlayerManager : MonoBehaviour
                     clipboardObject = item.GetComponent<Interactable>();
                     item.SetActive(false);
                     clipboardTile = null;
+                    navMeshSurface.BuildNavMeshAsync();
                 }
                 UpdateCntrlEnergy(-cutCost);
 
@@ -214,9 +235,10 @@ public class PlayerManager : MonoBehaviour
     }
 
     // Update the current cntrl energy and notify the level manager
-    private void UpdateCntrlEnergy(int change)
+    public void UpdateCntrlEnergy(int change)
     {
         currentCntrlEnergy += change;
+        currentCntrlEnergy = Mathf.Min(currentCntrlEnergy, LevelManager.instance.maxCntrlEnergy);
         LevelManager.instance.UpdateCntrlEnergy(currentCntrlEnergy);
     }
 
@@ -246,4 +268,5 @@ public class PlayerManager : MonoBehaviour
 
         return (null,hit);
     }
+    
 }
