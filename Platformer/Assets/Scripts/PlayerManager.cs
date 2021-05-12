@@ -18,11 +18,7 @@ public class PlayerManager : MonoBehaviour
     [SerializeField] private float dashDistance = 10f;
 
 
-    [Header("AbilityStats")]
-    [SerializeField] private int tabCost = 1;
-    [SerializeField] private int cutCost = 1;
-    [SerializeField] private int copyCost = 1;
-    [SerializeField] private int pasteCost = 1;
+
 
     [Header("Interaction")]
     [SerializeField] private float interactibilityDistance = 5f;
@@ -38,9 +34,10 @@ public class PlayerManager : MonoBehaviour
 
     private bool isJumping = false;
     private bool isDashing = false;
+    int health = 3;
 
     private Vector2 aimDirection = Vector2.zero;
-    public NavMeshSurface2d navMeshSurface;
+    private NavMeshSurface2d navMeshSurface;
 
     public static PlayerManager instance;
 
@@ -65,6 +62,7 @@ public class PlayerManager : MonoBehaviour
         
         playerController = GetComponent<PlayerController>();
         selectionRay = GetComponent<LineRenderer>();
+        navMeshSurface = FindObjectOfType<NavMeshSurface2d>();
         // set up input events
         controls.Gameplay.Jump.performed += _ => Jump();
         controls.Gameplay.Dash.performed += _ => Tab();
@@ -73,9 +71,8 @@ public class PlayerManager : MonoBehaviour
         controls.Gameplay.Paste.performed += _ => Paste();
 
         // set initial values
-        currentCntrlEnergy = Mathf.Min(LevelManager.instance.maxCntrlEnergy,initialCntrlEnergy);
+        currentCntrlEnergy = LevelManager.instance.initialCntrlEnergy;
         LevelManager.instance.UpdateCntrlEnergy(currentCntrlEnergy);
-        LevelManager.instance.SetShortcutCosts(tabCost, copyCost, cutCost, pasteCost);
         
     }
 
@@ -101,6 +98,7 @@ public class PlayerManager : MonoBehaviour
 
     private void FixedUpdate()
     {
+
         // move our player
         playerController.Move(horizontalInput * Time.fixedDeltaTime, false, isJumping, aimDirection,isDashing,dashSpeed);
         isJumping = false;
@@ -109,17 +107,17 @@ public class PlayerManager : MonoBehaviour
 
     private void Tab()
     {
-        if (currentCntrlEnergy - tabCost >= 0)
+        if (currentCntrlEnergy - LevelManager.instance.GetTabCost() >= 0)
         {
             isDashing = true;
-            UpdateCntrlEnergy(-tabCost);
+            UpdateCntrlEnergy(-LevelManager.instance.GetTabCost());
         }
         
     }
 
     private void Copy()
     {
-        if (currentCntrlEnergy - copyCost >= 0)
+        if (currentCntrlEnergy - LevelManager.instance.GetCopyCost() >= 0)
         {
             (GameObject item, RaycastHit2D hit) = Interact();
             if (item != null)
@@ -148,9 +146,13 @@ public class PlayerManager : MonoBehaviour
                     }
                     clipboardObject = Instantiate(item, new Vector3(-1000, -1000, 0), Quaternion.identity).GetComponent<Interactable>();
                     clipboardObject.gameObject.SetActive(false);
+                    if (clipboardObject.sprite != null)
+                    {
+                        LevelManager.instance.UpdateClipboard(clipboardObject.sprite);
+                    }
                     clipboardTile = null;
                 }
-                UpdateCntrlEnergy(-copyCost);
+                UpdateCntrlEnergy(-LevelManager.instance.GetCopyCost());
 
             }
         }
@@ -158,7 +160,7 @@ public class PlayerManager : MonoBehaviour
 
     private void Paste()
     {
-        if (currentCntrlEnergy - pasteCost >= 0)
+        if (currentCntrlEnergy - LevelManager.instance.GetPasteCost() >= 0)
         {
             Vector3 offset = (aimDirection * interactibilityDistance);
             Vector3 target = transform.position + offset;
@@ -169,7 +171,7 @@ public class PlayerManager : MonoBehaviour
                 {
 
                     LevelManager.instance.foregroundTilemap.SetTile(LevelManager.instance.foregroundTilemap.WorldToCell(target), clipboardTile);
-                    UpdateCntrlEnergy(-pasteCost);
+                    UpdateCntrlEnergy(-LevelManager.instance.GetPasteCost());
                     navMeshSurface.BuildNavMeshAsync();
 
                 }
@@ -179,7 +181,7 @@ public class PlayerManager : MonoBehaviour
                 
                 GameObject clone = Instantiate(clipboardObject.gameObject, target,Quaternion.identity);
                 clone.SetActive(true);
-                UpdateCntrlEnergy(-pasteCost);
+                UpdateCntrlEnergy(-LevelManager.instance.GetPasteCost());
                 navMeshSurface.BuildNavMeshAsync();
 
             }
@@ -189,7 +191,7 @@ public class PlayerManager : MonoBehaviour
 
     private void Cut()
     {
-        if (currentCntrlEnergy - cutCost >= 0)
+        if (currentCntrlEnergy - LevelManager.instance.GetCutCost() >= 0)
         {
             (GameObject item, RaycastHit2D hit) = Interact();
             if (item != null)
@@ -221,9 +223,14 @@ public class PlayerManager : MonoBehaviour
                     clipboardObject = item.GetComponent<Interactable>();
                     item.SetActive(false);
                     clipboardTile = null;
+                    if (clipboardObject.sprite != null)
+                    {
+                        LevelManager.instance.UpdateClipboard(clipboardObject.sprite);
+                    }
                     navMeshSurface.BuildNavMeshAsync();
                 }
-                UpdateCntrlEnergy(-cutCost);
+
+                UpdateCntrlEnergy(-LevelManager.instance.GetCutCost());
 
             }
         }
@@ -268,5 +275,19 @@ public class PlayerManager : MonoBehaviour
 
         return (null,hit);
     }
-    
+
+    public void TakeDamage(int damage = 1)
+    {
+        health -= damage;
+        LevelManager.instance.UpdateHealth(Mathf.Max(0,health));
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.gameObject.layer == LayerMask.NameToLayer("Key"))
+        {
+            LevelManager.instance.WinLevel(collision.gameObject);
+        }
+    }
+
 }
