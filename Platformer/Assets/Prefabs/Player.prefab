@@ -16,6 +16,7 @@ GameObject:
   - component: {fileID: 5020120194084187760}
   - component: {fileID: 5020120194084187761}
   - component: {fileID: 5020120194084187762}
+  - component: {fileID: 2014179765}
   m_Layer: 6
   m_Name: Player
   m_TagString: Untagged
@@ -79,7 +80,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: 020082574a0f6984a88b0b71675ace5b, type: 3}
+  m_Sprite: {fileID: -5092049721513924993, guid: 0bd6c98ea9cd6e4419fd80136b0c0cab, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -106,6 +107,7 @@ MonoBehaviour:
   m_CrouchSpeed: 0.36
   m_MovementSmoothing: 0.05
   m_AirControl: 1
+  coyoteJumpDelay: 0.08
   m_WhatIsGround:
     serializedVersion: 2
     m_Bits: 2871
@@ -132,7 +134,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   runSpeed: 40
   dashSpeed: 10
-  dashDistance: 10
   interactibilityDistance: 2
   interactableLayer:
     serializedVersion: 2
@@ -140,7 +141,6 @@ MonoBehaviour:
   initialCntrlEnergy: 0
   clipboardTile: {fileID: 0}
   clipboardObject: {fileID: 0}
-  navMeshSurface: {fileID: 0}
 --- !u!50 &5020120194084187773
 Rigidbody2D:
   serializedVersion: 4
@@ -201,7 +201,7 @@ CircleCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: -0.3172633}
+  m_Offset: {x: 0, y: -0.28}
   serializedVersion: 2
   m_Radius: 0.1974262
 --- !u!120 &5020120194084187762
@@ -302,6 +302,25 @@ LineRenderer:
     generateLightingData: 0
   m_UseWorldSpace: 1
   m_Loop: 0
+--- !u!95 &2014179765
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5020120194084187770}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 3806f33c7e0ad1447b0033ed0bb61d5f, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1 &5020120195804601132
 GameObject:
   m_ObjectHideFlags: 0
@@ -356,7 +375,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5020120195805935519}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.52, z: 0}
+  m_LocalPosition: {x: 0, y: -0.501, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 5020120194084187774}

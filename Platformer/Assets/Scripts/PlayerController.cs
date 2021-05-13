@@ -10,6 +10,7 @@ public class PlayerController : MonoBehaviour
     [Range(0, 1)] [SerializeField] private float m_CrouchSpeed = .36f;          // Amount of maxSpeed applied to crouching movement. 1 = 100%
     [Range(0, .3f)] [SerializeField] private float m_MovementSmoothing = .05f;  // How much to smooth out the movement
     [SerializeField] private bool m_AirControl = false;                         // Whether or not a player can steer while jumping;
+    [SerializeField] private float coyoteJumpDelay = .08f;
     [SerializeField] private LayerMask m_WhatIsGround;                          // A mask determining what is ground to the character
     [SerializeField] private Transform m_GroundCheck;                           // A position marking where to check if the player is grounded.
     [SerializeField] private Transform m_CeilingCheck;                          // A position marking where to check for ceilings
@@ -21,6 +22,7 @@ public class PlayerController : MonoBehaviour
     private Rigidbody2D m_Rigidbody2D;
     private bool m_FacingRight = true;  // For determining which way the player is currently facing.
     private Vector3 m_Velocity = Vector3.zero;
+    private float lastGroundedTime = 0f; // For determining whether the player can coyote jump
 
     [Header("Events")]
     [Space]
@@ -33,9 +35,12 @@ public class PlayerController : MonoBehaviour
     public BoolEvent OnCrouchEvent;
     private bool m_wasCrouching = false;
 
+    private Animator animator;
+
     private void Awake()
     {
         m_Rigidbody2D = GetComponent<Rigidbody2D>();
+        animator = GetComponent<Animator>();
 
         if (OnLandEvent == null)
             OnLandEvent = new UnityEvent();
@@ -57,10 +62,20 @@ public class PlayerController : MonoBehaviour
             if (colliders[i].gameObject != gameObject)
             {
                 m_Grounded = true;
+                animator.SetBool("IsGrounded", true);
                 if (!wasGrounded)
                     OnLandEvent.Invoke();
             }
         }
+
+        // just left the ground
+        if (wasGrounded && !m_Grounded)
+        {
+            animator.SetBool("IsGrounded", false);
+            lastGroundedTime = Time.time;
+        }
+
+        animator.SetFloat("VerticalSpeed", m_Rigidbody2D.velocity.y);
     }
 
 
@@ -135,26 +150,19 @@ public class PlayerController : MonoBehaviour
                 
             }
 
-            if (aimDirection.x > 0 && !m_FacingRight)
+
+            // If the input is moving the player right and the player is facing left...
+            if (move > 0 && !m_FacingRight)
             {
+                // ... flip the player.
                 Flip();
             }
-            else if (aimDirection.x < 0 && m_FacingRight)
+            // Otherwise if the input is moving the player left and the player is facing right...
+            else if (move < 0 && m_FacingRight)
             {
+                // ... flip the player.
                 Flip();
             }
-            //// If the input is moving the player right and the player is facing left...
-            //if (move > 0 && !m_FacingRight)
-            //{
-            //    // ... flip the player.
-            //    Flip();
-            //}
-            //// Otherwise if the input is moving the player left and the player is facing right...
-            //else if (move < 0 && m_FacingRight)
-            //{
-            //    // ... flip the player.
-            //    Flip();
-            //}
         }
         // If the player should jump...
         if (m_Grounded && jump)
@@ -162,6 +170,15 @@ public class PlayerController : MonoBehaviour
             // Add a vertical force to the player.
             m_Grounded = false;
             m_Rigidbody2D.AddForce(new Vector2(0f, m_JumpForce));
+            lastGroundedTime = Time.time;
+            animator.SetBool("IsGrounded", false);
+        }
+        else if (jump && Time.time - lastGroundedTime <= coyoteJumpDelay && m_Rigidbody2D.velocity.y <= 0) //coyote jump
+        {
+            m_Grounded = false;
+            m_Rigidbody2D.AddForce(new Vector2(0f, m_JumpForce));
+            lastGroundedTime = Time.time;
+            animator.SetBool("IsGrounded", false);
         }
     }
 

@@ -15,8 +15,7 @@ public class PlayerManager : MonoBehaviour
     [Header("Movement")]
     [SerializeField] private float runSpeed = 40f;
     [SerializeField] private float dashSpeed = 10f;
-    [SerializeField] private float dashDistance = 10f;
-
+    Animator animator;
 
 
 
@@ -63,6 +62,7 @@ public class PlayerManager : MonoBehaviour
         playerController = GetComponent<PlayerController>();
         selectionRay = GetComponent<LineRenderer>();
         navMeshSurface = FindObjectOfType<NavMeshSurface2d>();
+        animator = GetComponent<Animator>();
         // set up input events
         controls.Gameplay.Jump.performed += _ => Jump();
         controls.Gameplay.Dash.performed += _ => Tab();
@@ -92,6 +92,7 @@ public class PlayerManager : MonoBehaviour
     {
         // get input
         horizontalInput = controls.Gameplay.Move.ReadValue<float>() * runSpeed;
+        animator.SetFloat("Speed", Mathf.Abs(horizontalInput));
         Aim(controls.Gameplay.MousePosition.ReadValue<Vector2>());
 
     }
@@ -103,6 +104,7 @@ public class PlayerManager : MonoBehaviour
         playerController.Move(horizontalInput * Time.fixedDeltaTime, false, isJumping, aimDirection,isDashing,dashSpeed);
         isJumping = false;
         isDashing = false;
+        
     }
 
     private void Tab()
@@ -278,6 +280,7 @@ public class PlayerManager : MonoBehaviour
 
     public void TakeDamage(int damage = 1)
     {
+        animator.SetTrigger("Injured");
         health -= damage;
         LevelManager.instance.UpdateHealth(Mathf.Max(0,health));
     }
