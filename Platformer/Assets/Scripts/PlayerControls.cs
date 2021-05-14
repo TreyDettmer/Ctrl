@@ -73,6 +73,22 @@ public class @PlayerControls : IInputActionCollection, IDisposable
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """"
+                },
+                {
+                    ""name"": ""Zoom"",
+                    ""type"": ""PassThrough"",
+                    ""id"": ""755eff5b-2c1f-4947-84bb-7688743d9b40"",
+                    ""expectedControlType"": ""Axis"",
+                    ""processors"": """",
+                    ""interactions"": """"
+                },
+                {
+                    ""name"": ""Restart"",
+                    ""type"": ""PassThrough"",
+                    ""id"": ""6d7c2165-40fc-4dd8-86f2-6a017946ca3c"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """"
                 }
             ],
             ""bindings"": [
@@ -240,6 +256,28 @@ public class @PlayerControls : IInputActionCollection, IDisposable
                     ""action"": ""Cut"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""dc95c77f-a984-41e1-9cea-a1fff54e424f"",
+                    ""path"": ""<Mouse>/scroll/y"",
+                    ""interactions"": """",
+                    ""processors"": ""Normalize(min=-1,max=1),Invert"",
+                    ""groups"": """",
+                    ""action"": ""Zoom"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""2328e922-a5e1-42f1-b964-c7d7579c6ebe"",
+                    ""path"": ""<Keyboard>/r"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Restart"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -255,6 +293,8 @@ public class @PlayerControls : IInputActionCollection, IDisposable
         m_Gameplay_Copy = m_Gameplay.FindAction("Copy", throwIfNotFound: true);
         m_Gameplay_Paste = m_Gameplay.FindAction("Paste", throwIfNotFound: true);
         m_Gameplay_Cut = m_Gameplay.FindAction("Cut", throwIfNotFound: true);
+        m_Gameplay_Zoom = m_Gameplay.FindAction("Zoom", throwIfNotFound: true);
+        m_Gameplay_Restart = m_Gameplay.FindAction("Restart", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -311,6 +351,8 @@ public class @PlayerControls : IInputActionCollection, IDisposable
     private readonly InputAction m_Gameplay_Copy;
     private readonly InputAction m_Gameplay_Paste;
     private readonly InputAction m_Gameplay_Cut;
+    private readonly InputAction m_Gameplay_Zoom;
+    private readonly InputAction m_Gameplay_Restart;
     public struct GameplayActions
     {
         private @PlayerControls m_Wrapper;
@@ -322,6 +364,8 @@ public class @PlayerControls : IInputActionCollection, IDisposable
         public InputAction @Copy => m_Wrapper.m_Gameplay_Copy;
         public InputAction @Paste => m_Wrapper.m_Gameplay_Paste;
         public InputAction @Cut => m_Wrapper.m_Gameplay_Cut;
+        public InputAction @Zoom => m_Wrapper.m_Gameplay_Zoom;
+        public InputAction @Restart => m_Wrapper.m_Gameplay_Restart;
         public InputActionMap Get() { return m_Wrapper.m_Gameplay; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -352,6 +396,12 @@ public class @PlayerControls : IInputActionCollection, IDisposable
                 @Cut.started -= m_Wrapper.m_GameplayActionsCallbackInterface.OnCut;
                 @Cut.performed -= m_Wrapper.m_GameplayActionsCallbackInterface.OnCut;
                 @Cut.canceled -= m_Wrapper.m_GameplayActionsCallbackInterface.OnCut;
+                @Zoom.started -= m_Wrapper.m_GameplayActionsCallbackInterface.OnZoom;
+                @Zoom.performed -= m_Wrapper.m_GameplayActionsCallbackInterface.OnZoom;
+                @Zoom.canceled -= m_Wrapper.m_GameplayActionsCallbackInterface.OnZoom;
+                @Restart.started -= m_Wrapper.m_GameplayActionsCallbackInterface.OnRestart;
+                @Restart.performed -= m_Wrapper.m_GameplayActionsCallbackInterface.OnRestart;
+                @Restart.canceled -= m_Wrapper.m_GameplayActionsCallbackInterface.OnRestart;
             }
             m_Wrapper.m_GameplayActionsCallbackInterface = instance;
             if (instance != null)
@@ -377,6 +427,12 @@ public class @PlayerControls : IInputActionCollection, IDisposable
                 @Cut.started += instance.OnCut;
                 @Cut.performed += instance.OnCut;
                 @Cut.canceled += instance.OnCut;
+                @Zoom.started += instance.OnZoom;
+                @Zoom.performed += instance.OnZoom;
+                @Zoom.canceled += instance.OnZoom;
+                @Restart.started += instance.OnRestart;
+                @Restart.performed += instance.OnRestart;
+                @Restart.canceled += instance.OnRestart;
             }
         }
     }
@@ -390,5 +446,7 @@ public class @PlayerControls : IInputActionCollection, IDisposable
         void OnCopy(InputAction.CallbackContext context);
         void OnPaste(InputAction.CallbackContext context);
         void OnCut(InputAction.CallbackContext context);
+        void OnZoom(InputAction.CallbackContext context);
+        void OnRestart(InputAction.CallbackContext context);
     }
 }

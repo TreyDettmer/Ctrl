@@ -22,9 +22,9 @@ public class PlayerManager : MonoBehaviour
     [Header("Interaction")]
     [SerializeField] private float interactibilityDistance = 5f;
     [SerializeField] private LayerMask interactableLayer;
+    Transform pointerImage;
 
 
-    [SerializeField] private int initialCntrlEnergy = 10;
     private int currentCntrlEnergy;
 
 
@@ -63,12 +63,14 @@ public class PlayerManager : MonoBehaviour
         selectionRay = GetComponent<LineRenderer>();
         navMeshSurface = FindObjectOfType<NavMeshSurface2d>();
         animator = GetComponent<Animator>();
+        pointerImage = transform.GetChild(2);
         // set up input events
         controls.Gameplay.Jump.performed += _ => Jump();
         controls.Gameplay.Dash.performed += _ => Tab();
         controls.Gameplay.Copy.performed += _ => Copy();
         controls.Gameplay.Cut.performed += _ => Cut();
         controls.Gameplay.Paste.performed += _ => Paste();
+        controls.Gameplay.Restart.performed += _ => LevelManager.instance.RestartLevel();
 
         // set initial values
         currentCntrlEnergy = LevelManager.instance.initialCntrlEnergy;
@@ -262,7 +264,9 @@ public class PlayerManager : MonoBehaviour
         Vector3 rayTarget = aimDirection * interactibilityDistance;
         selectionRay.SetPosition(0, transform.position);
         selectionRay.SetPosition(1, transform.position + rayTarget);
-        
+        pointerImage.position = transform.position + rayTarget;
+
+
     }
 
     // Called when we want to interact with an object
