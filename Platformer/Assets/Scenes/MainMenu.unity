@@ -257,6 +257,49 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 216670816}
   m_CullTransparentMesh: 1
+--- !u!1 &233500386
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 233500388}
+  - component: {fileID: 233500387}
+  m_Layer: 0
+  m_Name: Temp
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &233500387
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 233500386}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6ff8bb4188184d44989b1ec976a0fc77, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!4 &233500388
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 233500386}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 357.4, y: 201, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 5
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &531377299
 GameObject:
   m_ObjectHideFlags: 0
@@ -641,8 +684,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1258203434}
-        m_TargetAssemblyTypeName: GameManager, Assembly-CSharp
+      - m_Target: {fileID: 233500387}
+        m_TargetAssemblyTypeName: MainMenu, Assembly-CSharp
         m_MethodName: GoToLevelSelection
         m_Mode: 1
         m_Arguments:
@@ -951,6 +994,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1258203435}
   - component: {fileID: 1258203434}
+  - component: {fileID: 1258203433}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -958,6 +1002,59 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!114 &1258203433
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1258203432}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4463e980fa2dfbf499d82ac62509de3d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sounds:
+  - name: Token
+    clip: {fileID: 8300000, guid: 33944e3fe37ae8645abc2c674127437c, type: 3}
+    volume: 0.4
+    shouldLoop: 0
+    source: {fileID: 0}
+  - name: Theme
+    clip: {fileID: 8300000, guid: dfe2c71672957bc4b804e36544b0ca3f, type: 3}
+    volume: 0.12
+    shouldLoop: 1
+    source: {fileID: 0}
+  - name: Cut
+    clip: {fileID: 8300000, guid: dd2b85918bbbf4f4291d46cc0ad47f85, type: 3}
+    volume: 0.4
+    shouldLoop: 0
+    source: {fileID: 0}
+  - name: Paste
+    clip: {fileID: 8300000, guid: 2d1feef1976bbe04992cbd6926252bc4, type: 3}
+    volume: 0.4
+    shouldLoop: 0
+    source: {fileID: 0}
+  - name: Copy
+    clip: {fileID: 8300000, guid: 7d1188433f8c52046a2305343ea224ad, type: 3}
+    volume: 0.4
+    shouldLoop: 0
+    source: {fileID: 0}
+  - name: Win
+    clip: {fileID: 8300000, guid: eeec1c307b200684a8e1f308d1c4c664, type: 3}
+    volume: 0.4
+    shouldLoop: 0
+    source: {fileID: 0}
+  - name: Lose
+    clip: {fileID: 8300000, guid: a7adf1acdd895884ab04703cbb590920, type: 3}
+    volume: 0.4
+    shouldLoop: 0
+    source: {fileID: 0}
+  - name: Tab
+    clip: {fileID: 8300000, guid: 44714cbf6c81f6340bb757b3855c4f7e, type: 3}
+    volume: 0.4
+    shouldLoop: 0
+    source: {fileID: 0}
 --- !u!114 &1258203434
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1304,8 +1401,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1258203434}
-        m_TargetAssemblyTypeName: GameManager, Assembly-CSharp
+      - m_Target: {fileID: 233500387}
+        m_TargetAssemblyTypeName: MainMenu, Assembly-CSharp
         m_MethodName: ExitApplication
         m_Mode: 1
         m_Arguments:

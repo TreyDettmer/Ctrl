@@ -39,6 +39,7 @@ public class PlayerManager : MonoBehaviour
     private NavMeshSurface2d navMeshSurface;
 
     public static PlayerManager instance;
+    public bool isActive = true;
 
     private void Awake()
     {
@@ -92,165 +93,194 @@ public class PlayerManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        // get input
-        horizontalInput = controls.Gameplay.Move.ReadValue<float>() * runSpeed;
-        animator.SetFloat("Speed", Mathf.Abs(horizontalInput));
-        Aim(controls.Gameplay.MousePosition.ReadValue<Vector2>());
-
+        if (isActive)
+        {
+            // get input
+            horizontalInput = controls.Gameplay.Move.ReadValue<float>() * runSpeed;
+            animator.SetFloat("Speed", Mathf.Abs(horizontalInput));
+            Aim(controls.Gameplay.MousePosition.ReadValue<Vector2>());
+        }
     }
 
     private void FixedUpdate()
     {
-
-        // move our player
-        playerController.Move(horizontalInput * Time.fixedDeltaTime, false, isJumping, aimDirection,isDashing,dashSpeed);
-        isJumping = false;
-        isDashing = false;
-        
+        if (isActive)
+        {
+            // move our player
+            playerController.Move(horizontalInput * Time.fixedDeltaTime, false, isJumping, aimDirection, isDashing, dashSpeed);
+            isJumping = false;
+            isDashing = false;
+        }
     }
 
     private void Tab()
     {
-        if (currentCntrlEnergy - LevelManager.instance.GetTabCost() >= 0)
+        if (isActive)
         {
-            isDashing = true;
-            UpdateCntrlEnergy(-LevelManager.instance.GetTabCost());
+            if (currentCntrlEnergy - LevelManager.instance.GetTabCost() >= 0)
+            {
+                isDashing = true;
+                AudioManager.instance.Play("Tab");
+                UpdateCntrlEnergy(-LevelManager.instance.GetTabCost());
+            }
         }
         
     }
 
     private void Copy()
     {
-        if (currentCntrlEnergy - LevelManager.instance.GetCopyCost() >= 0)
+        if (isActive)
         {
-            (GameObject item, RaycastHit2D hit) = Interact();
-            if (item != null)
+            if (currentCntrlEnergy - LevelManager.instance.GetCopyCost() >= 0)
             {
-                if (item.GetComponent<Tilemap>())
+                (GameObject item, RaycastHit2D hit) = Interact();
+                if (item != null)
                 {
-                    Vector3 hitPosition = Vector3.zero;
-                    hitPosition.x = hit.point.x - .01f * hit.normal.x;
-                    hitPosition.y = hit.point.y - .01f * hit.normal.y;
-                    clipboardTile = LevelManager.instance.foregroundTilemap.GetTile(LevelManager.instance.foregroundTilemap.WorldToCell(hitPosition));
-                    Sprite tileSprite = LevelManager.instance.foregroundTilemap.GetSprite(LevelManager.instance.foregroundTilemap.WorldToCell(hitPosition));
-                    LevelManager.instance.UpdateClipboard(tileSprite);
-                    if (clipboardObject)
+                    if (item.GetComponent<Tilemap>())
                     {
-                        Destroy(clipboardObject.gameObject);
-                        clipboardObject = null;
-                    }
-                    
-                    
-                }
-                else if (item.GetComponent<Interactable>())
-                {
-                    if (clipboardObject)
-                    {
-                        Destroy(clipboardObject.gameObject);
-                    }
-                    clipboardObject = Instantiate(item, new Vector3(-1000, -1000, 0), Quaternion.identity).GetComponent<Interactable>();
-                    clipboardObject.gameObject.SetActive(false);
-                    if (clipboardObject.sprite != null)
-                    {
-                        LevelManager.instance.UpdateClipboard(clipboardObject.sprite);
-                    }
-                    clipboardTile = null;
-                }
-                UpdateCntrlEnergy(-LevelManager.instance.GetCopyCost());
+                        Vector3 hitPosition = Vector3.zero;
+                        hitPosition.x = hit.point.x - .01f * hit.normal.x;
+                        hitPosition.y = hit.point.y - .01f * hit.normal.y;
+                        clipboardTile = LevelManager.instance.foregroundTilemap.GetTile(LevelManager.instance.foregroundTilemap.WorldToCell(hitPosition));
+                        Sprite tileSprite = LevelManager.instance.foregroundTilemap.GetSprite(LevelManager.instance.foregroundTilemap.WorldToCell(hitPosition));
+                        LevelManager.instance.UpdateClipboard(tileSprite);
+                        if (clipboardObject)
+                        {
+                            Destroy(clipboardObject.gameObject);
+                            clipboardObject = null;
+                        }
+                        UpdateCntrlEnergy(-LevelManager.instance.GetCopyCost());
+                        AudioManager.instance.Play("Copy");
 
+                    }
+                    else if (item.GetComponent<Interactable>())
+                    {
+                        if (clipboardObject)
+                        {
+                            Destroy(clipboardObject.gameObject);
+                        }
+                        clipboardObject = Instantiate(item, new Vector3(-1000, -1000, 0), Quaternion.identity).GetComponent<Interactable>();
+                        clipboardObject.gameObject.SetActive(false);
+                        if (clipboardObject.sprite != null)
+                        {
+                            LevelManager.instance.UpdateClipboard(clipboardObject.sprite);
+                        }
+                        clipboardTile = null;
+                        
+                        UpdateCntrlEnergy(-LevelManager.instance.GetCopyCost());
+                        AudioManager.instance.Play("Copy");
+                    }
+                    
+
+                }
             }
         }
     }
 
     private void Paste()
     {
-        if (currentCntrlEnergy - LevelManager.instance.GetPasteCost() >= 0)
+        if (isActive)
         {
-            Vector3 offset = (aimDirection * interactibilityDistance);
-            Vector3 target = transform.position + offset;
-            if (clipboardTile != null)
+            if (currentCntrlEnergy - LevelManager.instance.GetPasteCost() >= 0)
             {
-                (GameObject item, RaycastHit2D hit) = Interact();
-                if (!item)
+                Vector3 offset = (aimDirection * interactibilityDistance);
+                Vector3 target = transform.position + offset;
+                if (clipboardTile != null)
+                {
+                    (GameObject item, RaycastHit2D hit) = Interact();
+                    if (!item)
+                    {
+
+                        LevelManager.instance.foregroundTilemap.SetTile(LevelManager.instance.foregroundTilemap.WorldToCell(target), clipboardTile);
+                        UpdateCntrlEnergy(-LevelManager.instance.GetPasteCost());
+                        navMeshSurface.BuildNavMeshAsync();
+                        AudioManager.instance.Play("Paste");
+
+                    }
+                }
+                else if (clipboardObject != null)
                 {
 
-                    LevelManager.instance.foregroundTilemap.SetTile(LevelManager.instance.foregroundTilemap.WorldToCell(target), clipboardTile);
+                    GameObject clone = Instantiate(clipboardObject.gameObject, target, Quaternion.identity);
+                    clone.SetActive(true);
                     UpdateCntrlEnergy(-LevelManager.instance.GetPasteCost());
                     navMeshSurface.BuildNavMeshAsync();
+                    AudioManager.instance.Play("Paste");
 
                 }
-            }
-            else if (clipboardObject != null)
-            {
-                
-                GameObject clone = Instantiate(clipboardObject.gameObject, target,Quaternion.identity);
-                clone.SetActive(true);
-                UpdateCntrlEnergy(-LevelManager.instance.GetPasteCost());
-                navMeshSurface.BuildNavMeshAsync();
 
             }
-            
         }
     }
 
     private void Cut()
     {
-        if (currentCntrlEnergy - LevelManager.instance.GetCutCost() >= 0)
+        if (isActive)
         {
-            (GameObject item, RaycastHit2D hit) = Interact();
-            if (item != null)
+            if (currentCntrlEnergy - LevelManager.instance.GetCutCost() >= 0)
             {
-                if (item.GetComponent<Tilemap>())
+                (GameObject item, RaycastHit2D hit) = Interact();
+                if (item != null)
                 {
-                    Vector3 hitPosition = Vector3.zero;
-                    hitPosition.x = hit.point.x - .01f * hit.normal.x;
-                    hitPosition.y = hit.point.y - .01f * hit.normal.y;
-                    clipboardTile = LevelManager.instance.foregroundTilemap.GetTile(LevelManager.instance.foregroundTilemap.WorldToCell(hitPosition));
-                    Sprite tileSprite = LevelManager.instance.foregroundTilemap.GetSprite(LevelManager.instance.foregroundTilemap.WorldToCell(hitPosition));
-                    LevelManager.instance.foregroundTilemap.SetTile(LevelManager.instance.foregroundTilemap.WorldToCell(hitPosition), null);
-                    LevelManager.instance.UpdateClipboard(tileSprite);
-                    if (clipboardObject)
+                    if (item.GetComponent<Tilemap>())
                     {
-                        Destroy(clipboardObject.gameObject);
-                        clipboardObject = null;
-                    }
-                    navMeshSurface.BuildNavMeshAsync();
+                        Vector3 hitPosition = Vector3.zero;
+                        hitPosition.x = hit.point.x - .01f * hit.normal.x;
+                        hitPosition.y = hit.point.y - .01f * hit.normal.y;
+                        clipboardTile = LevelManager.instance.foregroundTilemap.GetTile(LevelManager.instance.foregroundTilemap.WorldToCell(hitPosition));
+                        Sprite tileSprite = LevelManager.instance.foregroundTilemap.GetSprite(LevelManager.instance.foregroundTilemap.WorldToCell(hitPosition));
+                        LevelManager.instance.foregroundTilemap.SetTile(LevelManager.instance.foregroundTilemap.WorldToCell(hitPosition), null);
+                        LevelManager.instance.UpdateClipboard(tileSprite);
+                        if (clipboardObject)
+                        {
+                            Destroy(clipboardObject.gameObject);
+                            clipboardObject = null;
+                        }
+                        navMeshSurface.BuildNavMeshAsync();
+                        AudioManager.instance.Play("Cut");
 
+
+                    }
+                    else if (item.GetComponent<Interactable>())
+                    {
+                        if (clipboardObject)
+                        {
+                            Destroy(clipboardObject.gameObject);
+                        }
+                        clipboardObject = item.GetComponent<Interactable>();
+                        item.SetActive(false);
+                        clipboardTile = null;
+                        if (clipboardObject.sprite != null)
+                        {
+                            LevelManager.instance.UpdateClipboard(clipboardObject.sprite);
+                        }
+                        navMeshSurface.BuildNavMeshAsync();
+                        AudioManager.instance.Play("Cut");
+                    }
+
+                    UpdateCntrlEnergy(-LevelManager.instance.GetCutCost());
 
                 }
-                else if (item.GetComponent<Interactable>())
-                {
-                    if (clipboardObject)
-                    {
-                        Destroy(clipboardObject.gameObject);
-                    }
-                    clipboardObject = item.GetComponent<Interactable>();
-                    item.SetActive(false);
-                    clipboardTile = null;
-                    if (clipboardObject.sprite != null)
-                    {
-                        LevelManager.instance.UpdateClipboard(clipboardObject.sprite);
-                    }
-                    navMeshSurface.BuildNavMeshAsync();
-                }
-
-                UpdateCntrlEnergy(-LevelManager.instance.GetCutCost());
-
             }
         }
     }
 
     private void Jump()
     {
-        isJumping = true;
+        if (isActive)
+        {
+            isJumping = true;
+        }
     }
 
     // Update the current cntrl energy and notify the level manager
     public void UpdateCntrlEnergy(int change)
     {
+
         currentCntrlEnergy += change;
         currentCntrlEnergy = Mathf.Min(currentCntrlEnergy, LevelManager.instance.maxCntrlEnergy);
         LevelManager.instance.UpdateCntrlEnergy(currentCntrlEnergy);
+        
     }
 
 
@@ -284,16 +314,22 @@ public class PlayerManager : MonoBehaviour
 
     public void TakeDamage(int damage = 1)
     {
-        animator.SetTrigger("Injured");
-        health -= damage;
-        LevelManager.instance.UpdateHealth(Mathf.Max(0,health));
+        if (isActive)
+        {
+            animator.SetTrigger("Injured");
+            health -= damage;
+            LevelManager.instance.UpdateHealth(Mathf.Max(0, health));
+        }
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.gameObject.layer == LayerMask.NameToLayer("Key"))
+        if (isActive)
         {
-            LevelManager.instance.WinLevel(collision.gameObject);
+            if (collision.gameObject.layer == LayerMask.NameToLayer("Key"))
+            {
+                LevelManager.instance.WinLevel(collision.gameObject);
+            }
         }
     }
 

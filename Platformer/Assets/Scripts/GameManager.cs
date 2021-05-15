@@ -31,14 +31,7 @@ public class GameManager : MonoBehaviour
         
     }
 
-    public void GoToLevelSelection()
-    {
-        SceneManager.LoadScene("LevelSelection");
-    }
 
-    public void ExitApplication()
-    {
-        Application.Quit();
-    }
+
 
 }

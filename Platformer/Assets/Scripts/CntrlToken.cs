@@ -27,6 +27,7 @@ public class CntrlToken : MonoBehaviour
             {
                 collision.gameObject.GetComponent<PlayerManager>().UpdateCntrlEnergy(cntrlEnergy);
                 wasPickedUp = true;
+                AudioManager.instance.Play("Token");
                 Destroy(this.gameObject);
             }
         }

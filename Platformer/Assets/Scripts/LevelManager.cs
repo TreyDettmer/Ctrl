@@ -14,7 +14,8 @@ public class LevelManager : MonoBehaviour
     public static LevelManager instance;
     public Tilemap foregroundTilemap;
     [SerializeField] Animator cinematicAnimator;
-
+    [SerializeField] private int levelNumber = 1;
+    
 
     public float initialTimerValue = 60f;
     private float currentTimerValue = 60f;
@@ -39,12 +40,13 @@ public class LevelManager : MonoBehaviour
     public Slider cntrlEnergySlider;
     public TextMeshProUGUI cntrlEnergyTextValue;
     public Image clipboard;
-    public TextMeshProUGUI[] shortcutCostsText;
     public Image[] hearts;
+    private Image injuredImageEffect;
 
     [Header("EndGame")]
     public GameObject winMenu;
     public TextMeshProUGUI completionTimeText;
+    public GameObject highScoreObject;
     public GameObject loseMenu;
     public TextMeshProUGUI reasonForLossText;
     
@@ -64,12 +66,16 @@ public class LevelManager : MonoBehaviour
 
     // Start is called before the first frame update
     void Start()
-    {     
+    {
+        Cursor.lockState = CursorLockMode.Confined;
+        Cursor.visible = false;
         PlayerManager.instance.enabled = false;
+        injuredImageEffect = timerSlider.gameObject.transform.parent.GetChild(0).gameObject.GetComponent<Image>();
         currentTimerValue = initialTimerValue;
         timerTextValue.text = ((int)currentTimerValue).ToString();
         UpdateCntrlEnergy(initialCntrlEnergy);
-        SetShortcutCosts(tabCost, copyCost, cutCost, pasteCost);
+        timerSlider.value = currentTimerValue / 60;
+        timerTextValue.text = ((int)currentTimerValue).ToString();
         StartCinematic();
     }
 
@@ -90,7 +96,7 @@ public class LevelManager : MonoBehaviour
     private void UpdateTimerValue()
     {
         currentTimerValue -= Time.deltaTime;
-        timerSlider.value = currentTimerValue / initialTimerValue;
+        timerSlider.value = currentTimerValue / 60;
         timerTextValue.text = ((int)currentTimerValue).ToString();
         if (currentTimerValue <= 10)
         {
@@ -142,13 +148,6 @@ public class LevelManager : MonoBehaviour
         
     }
 
-    public void SetShortcutCosts(int tabCost, int copyCost, int cutCost, int pasteCost)
-    {
-        shortcutCostsText[0].text = "Tab\t\t" + tabCost;
-        shortcutCostsText[1].text = "Copy\t\t" + copyCost;
-        shortcutCostsText[2].text = "Cut\t\t" + cutCost;
-        shortcutCostsText[3].text = "Paste\t\t" + pasteCost;
-    }
 
     public void UpdateHealth(int health)
     {
@@ -158,7 +157,7 @@ public class LevelManager : MonoBehaviour
             {
                 hearts[i].enabled = false;
             }
-            
+            StartCoroutine(InjuredEffect());
             if (health == 0)
             {
                 reasonForLossText.text = "You ran out of lives.";
@@ -167,17 +166,32 @@ public class LevelManager : MonoBehaviour
         }
     }
 
+    IEnumerator InjuredEffect()
+    {
+        float current = 0f;
+        injuredImageEffect.color = new Color(injuredImageEffect.color.r, injuredImageEffect.color.g, injuredImageEffect.color.b, .3f);
+        while (current < .3f)
+        {
+            current += Time.deltaTime;
+            injuredImageEffect.color = new Color(injuredImageEffect.color.r, injuredImageEffect.color.g, injuredImageEffect.color.b, 1f - current/.3f);
+            yield return null;
+        }
+        injuredImageEffect.color = new Color(injuredImageEffect.color.r, injuredImageEffect.color.g, injuredImageEffect.color.b, 0f);
+    }
+
     private void LoseLevel()
     {
         if (isRunning)
         {
-
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
             DisableGameObjects();
 
             isRunning = false;
             Debug.Log("Lost level");
 
             loseMenu.SetActive(true);
+            AudioManager.instance.Play("Lose");
         }
     }
 
@@ -201,7 +215,7 @@ public class LevelManager : MonoBehaviour
         PlayerManager.instance.GetComponent<PlayerController>().enabled = false;
         PlayerManager.instance.GetComponent<LineRenderer>().enabled = false;
         PlayerManager.instance.GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Static;
-        PlayerManager.instance.enabled = false;
+        PlayerManager.instance.isActive = false;
     }
 
     public void WinLevel(GameObject key)
@@ -210,12 +224,28 @@ public class LevelManager : MonoBehaviour
         {
             if (key.layer == LayerMask.NameToLayer("Key"))
             {
+                Cursor.lockState = CursorLockMode.None;
+                Cursor.visible = true;
                 DisableGameObjects();
                 isRunning = false;
                 Debug.Log("Won level!");
-
-                completionTimeText.text = "Completion Time: " + (Mathf.Round((Time.time - startTime)*100f)/100f).ToString() + "s";
+                float completionTime = Mathf.Round((Time.time - startTime) * 100f) / 100f;
+                string pPrefVariable = "Level" + levelNumber.ToString();
+                if (PlayerPrefs.HasKey(pPrefVariable))
+                {
+                    if (PlayerPrefs.GetFloat(pPrefVariable) > completionTime)
+                    {
+                        highScoreObject.SetActive(true);
+                        PlayerPrefs.SetFloat(pPrefVariable, completionTime);
+                    }
+                }
+                else
+                {
+                    PlayerPrefs.SetFloat(pPrefVariable, completionTime);
+                }
+                completionTimeText.text = "Completion Time: " + completionTime.ToString() + "s";
                 winMenu.SetActive(true);
+                AudioManager.instance.Play("Win");
 
             }
         }
@@ -228,6 +258,8 @@ public class LevelManager : MonoBehaviour
 
     public void LoadMainMenu()
     {
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
         SceneManager.LoadScene("MainMenu");
     }
 
