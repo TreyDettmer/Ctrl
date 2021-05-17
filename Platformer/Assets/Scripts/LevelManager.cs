@@ -67,8 +67,6 @@ public class LevelManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        Cursor.lockState = CursorLockMode.Confined;
-        Cursor.visible = false;
         PlayerManager.instance.enabled = false;
         injuredImageEffect = timerSlider.gameObject.transform.parent.GetChild(0).gameObject.GetComponent<Image>();
         currentTimerValue = initialTimerValue;
@@ -191,7 +189,8 @@ public class LevelManager : MonoBehaviour
             Debug.Log("Lost level");
 
             loseMenu.SetActive(true);
-            AudioManager.instance.Play("Lose");
+            if (AudioManager.instance != null)
+                AudioManager.instance.Play("Lose");
         }
     }
 
@@ -245,7 +244,8 @@ public class LevelManager : MonoBehaviour
                 }
                 completionTimeText.text = "Completion Time: " + completionTime.ToString() + "s";
                 winMenu.SetActive(true);
-                AudioManager.instance.Play("Win");
+                if (AudioManager.instance != null)
+                    AudioManager.instance.Play("Win");
 
             }
         }
@@ -258,8 +258,6 @@ public class LevelManager : MonoBehaviour
 
     public void LoadMainMenu()
     {
-        Cursor.lockState = CursorLockMode.None;
-        Cursor.visible = true;
         SceneManager.LoadScene("MainMenu");
     }
 

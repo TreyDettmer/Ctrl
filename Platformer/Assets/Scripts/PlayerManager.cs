@@ -22,7 +22,6 @@ public class PlayerManager : MonoBehaviour
     [Header("Interaction")]
     [SerializeField] private float interactibilityDistance = 5f;
     [SerializeField] private LayerMask interactableLayer;
-    Transform pointerImage;
 
 
     private int currentCntrlEnergy;
@@ -64,7 +63,6 @@ public class PlayerManager : MonoBehaviour
         selectionRay = GetComponent<LineRenderer>();
         navMeshSurface = FindObjectOfType<NavMeshSurface2d>();
         animator = GetComponent<Animator>();
-        pointerImage = transform.GetChild(2);
         // set up input events
         controls.Gameplay.Jump.performed += _ => Jump();
         controls.Gameplay.Dash.performed += _ => Tab();
@@ -120,7 +118,8 @@ public class PlayerManager : MonoBehaviour
             if (currentCntrlEnergy - LevelManager.instance.GetTabCost() >= 0)
             {
                 isDashing = true;
-                AudioManager.instance.Play("Tab");
+                if (AudioManager.instance != null)
+                    AudioManager.instance.Play("Tab");
                 UpdateCntrlEnergy(-LevelManager.instance.GetTabCost());
             }
         }
@@ -150,7 +149,8 @@ public class PlayerManager : MonoBehaviour
                             clipboardObject = null;
                         }
                         UpdateCntrlEnergy(-LevelManager.instance.GetCopyCost());
-                        AudioManager.instance.Play("Copy");
+                        if (AudioManager.instance != null)
+                            AudioManager.instance.Play("Copy");
 
                     }
                     else if (item.GetComponent<Interactable>())
@@ -159,7 +159,7 @@ public class PlayerManager : MonoBehaviour
                         {
                             Destroy(clipboardObject.gameObject);
                         }
-                        clipboardObject = Instantiate(item, new Vector3(-1000, -1000, 0), Quaternion.identity).GetComponent<Interactable>();
+                        clipboardObject = Instantiate(item, new Vector3(-10, -10, 0), Quaternion.identity).GetComponent<Interactable>();
                         clipboardObject.gameObject.SetActive(false);
                         if (clipboardObject.sprite != null)
                         {
@@ -168,7 +168,8 @@ public class PlayerManager : MonoBehaviour
                         clipboardTile = null;
                         
                         UpdateCntrlEnergy(-LevelManager.instance.GetCopyCost());
-                        AudioManager.instance.Play("Copy");
+                        if (AudioManager.instance != null)
+                            AudioManager.instance.Play("Copy");
                     }
                     
 
@@ -194,7 +195,8 @@ public class PlayerManager : MonoBehaviour
                         LevelManager.instance.foregroundTilemap.SetTile(LevelManager.instance.foregroundTilemap.WorldToCell(target), clipboardTile);
                         UpdateCntrlEnergy(-LevelManager.instance.GetPasteCost());
                         navMeshSurface.BuildNavMeshAsync();
-                        AudioManager.instance.Play("Paste");
+                        if (AudioManager.instance != null)
+                            AudioManager.instance.Play("Paste");
 
                     }
                 }
@@ -205,7 +207,8 @@ public class PlayerManager : MonoBehaviour
                     clone.SetActive(true);
                     UpdateCntrlEnergy(-LevelManager.instance.GetPasteCost());
                     navMeshSurface.BuildNavMeshAsync();
-                    AudioManager.instance.Play("Paste");
+                    if (AudioManager.instance != null)
+                        AudioManager.instance.Play("Paste");
 
                 }
 
@@ -237,7 +240,8 @@ public class PlayerManager : MonoBehaviour
                             clipboardObject = null;
                         }
                         navMeshSurface.BuildNavMeshAsync();
-                        AudioManager.instance.Play("Cut");
+                        if (AudioManager.instance != null)
+                            AudioManager.instance.Play("Cut");
 
 
                     }
@@ -247,15 +251,17 @@ public class PlayerManager : MonoBehaviour
                         {
                             Destroy(clipboardObject.gameObject);
                         }
-                        clipboardObject = item.GetComponent<Interactable>();
-                        item.SetActive(false);
+                        clipboardObject = Instantiate(item, new Vector3(-10, -10, 0), Quaternion.identity).GetComponent<Interactable>();
+                        clipboardObject.gameObject.SetActive(false);
+                        Destroy(item);
                         clipboardTile = null;
                         if (clipboardObject.sprite != null)
                         {
                             LevelManager.instance.UpdateClipboard(clipboardObject.sprite);
                         }
                         navMeshSurface.BuildNavMeshAsync();
-                        AudioManager.instance.Play("Cut");
+                        if (AudioManager.instance != null)
+                            AudioManager.instance.Play("Cut");
                     }
 
                     UpdateCntrlEnergy(-LevelManager.instance.GetCutCost());
@@ -294,7 +300,6 @@ public class PlayerManager : MonoBehaviour
         Vector3 rayTarget = aimDirection * interactibilityDistance;
         selectionRay.SetPosition(0, transform.position);
         selectionRay.SetPosition(1, transform.position + rayTarget);
-        pointerImage.position = transform.position + rayTarget;
 
 
     }
