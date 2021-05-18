@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.Events;
 
 // this script is from https://github.com/Brackeys/2D-Character-Controller
-// I have modified it to include dashing and air control percentage
+// I have modified it to include dashing and coyote jumping
 
 public class PlayerController : MonoBehaviour
 {
@@ -79,7 +79,7 @@ public class PlayerController : MonoBehaviour
     }
 
 
-    public void Move(float move, bool crouch, bool jump, Vector2 aimDirection, bool dash = false, float dashSpeed = 0f)
+    public void Move(float move, bool crouch, bool jump, bool dash = false, float dashSpeed = 0f)
     {
         // If crouching, check to see if the character can stand up
         if (!crouch)

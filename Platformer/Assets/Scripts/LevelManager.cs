@@ -80,6 +80,7 @@ public class LevelManager : MonoBehaviour
     void StartCinematic()
     {
         cinematicAnimator.Play("MainCamera");
+        // start the level after the 3 second long intro cinematic
         Invoke("StartLevel", 3f);
     }
 
@@ -164,6 +165,7 @@ public class LevelManager : MonoBehaviour
         }
     }
 
+    // coroutine to tint screen red when player gets injured
     IEnumerator InjuredEffect()
     {
         float current = 0f;
@@ -230,6 +232,8 @@ public class LevelManager : MonoBehaviour
                 Debug.Log("Won level!");
                 float completionTime = Mathf.Round((Time.time - startTime) * 100f) / 100f;
                 string pPrefVariable = "Level" + levelNumber.ToString();
+
+                // save the player's score
                 if (PlayerPrefs.HasKey(pPrefVariable))
                 {
                     if (PlayerPrefs.GetFloat(pPrefVariable) > completionTime)

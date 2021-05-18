@@ -4,6 +4,7 @@ using UnityEngine.Audio;
 using System;
 using UnityEngine;
 
+// this script is from the Brackey's video on Audio in Unity https://www.youtube.com/watch?v=6OT43pvUyfY
 public class AudioManager : MonoBehaviour
 {
     public Sound[] sounds;

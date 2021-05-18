@@ -105,7 +105,7 @@ public class PlayerManager : MonoBehaviour
         if (isActive)
         {
             // move our player
-            playerController.Move(horizontalInput * Time.fixedDeltaTime, false, isJumping, aimDirection, isDashing, dashSpeed);
+            playerController.Move(horizontalInput * Time.fixedDeltaTime, false, isJumping, isDashing, dashSpeed);
             isJumping = false;
             isDashing = false;
         }
@@ -137,12 +137,15 @@ public class PlayerManager : MonoBehaviour
                 {
                     if (item.GetComponent<Tilemap>())
                     {
+                        // we offset the hitposition so that we can correctly get the tile at that position
                         Vector3 hitPosition = Vector3.zero;
                         hitPosition.x = hit.point.x - .01f * hit.normal.x;
                         hitPosition.y = hit.point.y - .01f * hit.normal.y;
                         clipboardTile = LevelManager.instance.foregroundTilemap.GetTile(LevelManager.instance.foregroundTilemap.WorldToCell(hitPosition));
                         Sprite tileSprite = LevelManager.instance.foregroundTilemap.GetSprite(LevelManager.instance.foregroundTilemap.WorldToCell(hitPosition));
                         LevelManager.instance.UpdateClipboard(tileSprite);
+
+                        // since we can only have one thing on the clipboard, destroy the current clipboard object
                         if (clipboardObject)
                         {
                             Destroy(clipboardObject.gameObject);
@@ -194,6 +197,7 @@ public class PlayerManager : MonoBehaviour
 
                         LevelManager.instance.foregroundTilemap.SetTile(LevelManager.instance.foregroundTilemap.WorldToCell(target), clipboardTile);
                         UpdateCntrlEnergy(-LevelManager.instance.GetPasteCost());
+                        // whenever we modify the environment, we need to rebuild the navmesh so squiggly enemies can properly manuever around environment
                         navMeshSurface.BuildNavMeshAsync();
                         if (AudioManager.instance != null)
                             AudioManager.instance.Play("Paste");
